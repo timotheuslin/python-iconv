@@ -109,7 +109,7 @@ Iconv_iconv(IconvObject *self, PyObject *args, PyObject* kwargs)
         outbuf_size = outbuf_size_int;
     }
     /* Perform the conversion. */
-    iresult = iconv(self->handle, &inbuf, &inbuf_size, &outbuf, &outbuf_size);
+    iresult = iconv(self->handle, (char ** restrict)&inbuf, &inbuf_size, &outbuf, &outbuf_size);
 
     PyBuffer_Release(&inbuf_view);
 
@@ -119,7 +119,7 @@ Iconv_iconv(IconvObject *self, PyObject *args, PyObject* kwargs)
         _PyBytes_Resize(&result, outbuf_size_int-outbuf_size);
     }
 
-    if (iresult == -1) {
+    if (iresult == (size_t) -1) {
         PyObject *exc;
         exc = PyObject_CallFunction(error,"siiO",
                                     strerror(errno),errno,
